@@ -1,0 +1,71 @@
+body {
+  padding-top: 15px;
+  padding-bottom: 60px;
+  font-size: 16px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.chat-message-form {
+  background: #e5e5e5;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding-top: 10px;
+  box-shadow: 0 -2px 4px #555555;
+}
+.chat-message-form form {
+  padding-left: 25px; 
+  padding-right: 25px;
+}
+
+.media-list li {
+  padding: 20px;
+  box-shadow: 0px 2px 4px #555555;
+}
+
+.media-heading {
+  
+} 
+
+.media-list small {
+  font-size: 40%;
+}
+
+.media-list p {
+  color: #465671;
+  font-size: 1.5em; /* Approximation due to font substitution */
+  font-weight: 700;
+  padding: 10px 0px;
+}
+
+.media-list li:nth-child(odd) { 
+  background: #eee; 
+}
+
+.app-menu {
+    display: none;
+    position: fixed;
+    top: 50px;
+    bottom: 0px;
+    left: 0px;
+    z-index: 400;
+    padding: 0px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: #333333;
+    border-right: 1px solid #eee;
+}
+
+.i-frame-section {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 50px;
+    padding: 15px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.app-page {
+  padding: 60px 15px;
+}

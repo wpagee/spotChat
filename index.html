@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Local Node/Socket.IO chat</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link href='http://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet' type='text/css'>
+    <link href="css/site.css" rel="stylesheet" type='text/css'>
+  </head>
+
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+          <div class="col-sm-8 i-frame-section">
+
+             <form id="iframe-form" class="form-horizontal" role="iframe-form" style="padding: 0px 15px;">
+                <div class="form-group">
+                  <div class="input-group">
+                    <input type="text" class="form-control" autocomplete="off" placeholder="Url" id="url">
+                    <span class="input-group-btn">
+                      <button type="submit" class="btn btn-success">Go</button>
+                    </span>
+                  </div>
+                </div>
+              </form>
+
+
+              <div class="embed-responsive embed-responsive-16by9">
+                  <iframe id="app-iframe" src="https://embed.spotify.com/?uri=spotify:track:3xbVLFFcodMTNlLb8wuPsC" class="embed-responsive-item"></iframe>
+              </div>
+          </div>
+          <div class="col-sm-offset-8 col-sm-4">
+            <div>
+              People Connected: <span class="badge" id="peopleConected"></span>
+            </div>
+            <ul class="media-list"></ul>
+          </div>
+      </div>
+    </div>
+
+    <div class="container-fluid chat-message-form">
+      <form id="chat-form" class="form-horizontal" role="message-form">
+        <div class="form-group">
+          <div class="input-group">
+            <input type="text" class="form-control" autocomplete="off" placeholder="New Message" id="m">
+            <span class="input-group-btn">
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </span>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.min.js"></script>
+    <script>
+      var socket = io();
+      
+      //get the msg
+      $('#chat-form').submit(function() {
+        socket.emit('chat message', $('#m').val());
+        $('#m').val('');
+        return false;
+      });
+
+      $('#iframe-form').submit(function() {
+        socket.emit('iframe update', $('#url').val());
+        return false;
+      });
+
+      //display new msg
+      socket.on('chat message', function(chatMsg) {
+        $('.media-list').append(createNewPost(chatMsg));
+      });
+
+      socket.on('iframe update', function(url) {
+        $('#app-iframe').prop('src', url);
+      });
+
+      socket.on('person connected', function(num) {
+        $('#peopleConected').text(num);
+      });
+
+      $(document).on('ready', function() {
+        var result = prompt('Welcome, please enter the user name you would like to display.');
+        socket.emit('setUserName', result);
+      });
+
+
+
+      function createNewPost(chatMsg) {
+        return [
+                '<li class="media">',
+                //'<a class="pull-left" href="#">',
+                //'<img class="media-object" src="http://placecage.com/c/64/64" alt="">',
+                //'</a>',
+                '<div class="media-body">',
+                '<h3 class="media-heading">',
+                chatMsg.name,
+                '<small>Posted: ',
+                chatMsg.dateTime,
+                '</small>',
+                '</h3>',
+                '<p>',
+                chatMsg.message,
+                '</p>',
+                '</div>',
+                '</li>'
+              ].join(' ');
+      };
+    </script>
+
+  </body>
+</html>
