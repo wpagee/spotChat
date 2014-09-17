@@ -12,12 +12,12 @@
   <body>
     <div class="container-fluid">
       <div class="row">
-          <div class="col-sm-8 i-frame-section">
+          <div class="col-xs-6 col-sm-8 i-frame-section">
 
              <form id="iframe-form" class="form-horizontal" role="iframe-form" style="padding: 0px 15px;">
                 <div class="form-group">
                   <div class="input-group">
-                    <input type="text" class="form-control" autocomplete="off" placeholder="Url" id="url">
+                    <input type="text" class="form-control" autocomplete="off" placeholder="Enter of Drag and Drop a Spotify track Link or Url" id="url">
                     <span class="input-group-btn">
                       <button type="submit" class="btn btn-success">Go</button>
                     </span>
@@ -30,9 +30,13 @@
                   <iframe id="app-iframe" src="https://embed.spotify.com/?uri=spotify:track:3xbVLFFcodMTNlLb8wuPsC" class="embed-responsive-item"></iframe>
               </div>
           </div>
-          <div class="col-sm-offset-8 col-sm-4">
-            <div>
-              People Connected: <span class="badge" id="peopleConected"></span>
+          <div class="col-xs-6 col-xs-offset-6 col-sm-offset-8 col-sm-4" style="padding-top: 50px;">
+            <div style="padding-bottom: 10px; position: absolute; top: 0; left: 0; margin-top: -15px;">
+              <div style="position: fixed; background: #ffffff; width: 100%; padding: 15px; box-shadow: 4px 2px 4px #555">
+                <div>
+                  People Connected&nbsp;&nbsp;&nbsp;&nbsp;<span class="badge" id="peopleConected"></span>
+                </div>
+              </div>
             </div>
             <ul class="media-list"></ul>
           </div>
@@ -64,7 +68,7 @@
       
       //get the msg
       $('#chat-form').submit(function() {
-        socket.emit('chat message', $('#m').val());
+        socket.emit('chat message', $('#m').val(), window.sessionStorage.getItem('spotChat-id'));
         $('#m').val('');
         return false;
       });
@@ -83,16 +87,18 @@
         $('#app-iframe').prop('src', url);
       });
 
-      socket.on('person connected', function(num) {
-        $('#peopleConected').text(num);
+      socket.on('person connected', function(count) {
+        $('#peopleConected').text(count);      
+      });
+
+      socket.on('person disconnect', function(count) {
+        $('#peopleConected').text(count);
       });
 
       $(document).on('ready', function() {
-        var result = prompt('Welcome, please enter the user name you would like to display.');
-        socket.emit('setUserName', result);
+        var name = prompt('Welcome, please enter the user name you would like to display.');
+        socket.emit('setUser', name);        
       });
-
-
 
       function createNewPost(chatMsg) {
         return [

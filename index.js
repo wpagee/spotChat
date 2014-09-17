@@ -1,18 +1,11 @@
 var express = require('express');
 var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
 var moment = require('moment');
 var storage = require('dom-storage');
-var sessionStorage = new storage(null, { strict: false });
-
-var _currentUser = {
-	id: null,
-	name: '',
-	online: false,
-};
-
-var _peopleLoggedIn = 0;
+var localStorage = new storage('./users.json', { strict: false, ws: ' ' });
 
 app.get('/', function(req, res) {
 	res.sendfile('index.html');
@@ -21,22 +14,27 @@ app.get('/', function(req, res) {
 app.use('/css', express.static(__dirname + '/css'));
 
 io.on('connection', function(socket){
-	_peopleLoggedIn++;
 
 	socket.on('disconnect', function() {
 		console.log('user disconnected');
-		_currentUser.online = false;
-		_peopleLoggedIn--;
-		io.emit('person connected', _peopleLoggedIn);
+
+		var userCount = localStorage.getItem('userCount');
+		userCount = userCount != null ? userCount - 1 : 0;
+		if(userCount < 0) {
+			userCount = 0;
+		}
+		localStorage.setItem('userCount', userCount);
+		localStorage.removeItem(socket.id);
+		io.emit('person disconnected', userCount);
 	});
 
 	socket.on('chat message', function(msg) {
-		var userName = sessionStorage.getItem('user');
+		var _user = localStorage.getItem(socket.id);
 
 		var chatMsg = {
-			dateTime: moment().format("dddd, MMMM Do YYYY, h:mm:ss a"),
+			dateTime: moment().format("MMM D, YYYY h:mm:ss a"),
 			message: msg,
-			name: userName != null ? userName.name : 'unknown'
+			name: _user != null ? _user.name : 'unknown'
 		};
 
 		io.emit('chat message', chatMsg);
@@ -49,31 +47,43 @@ io.on('connection', function(socket){
 			console.log('youtube video');
 		} else if(url.match('spotify:track:')) {
 			_url = ['https://embed.spotify.com/?uri=', url].join('');
+		} else if(url.match('http://open.spotify.com/track/')) {
+			_url = url.replace('http://open.spotify.com/track/', 'https://embed.spotify.com/?uri=spotify:track:');
 		}
 		if(_url == null) {
 			_url = url;
 		}
+		console.log(_url);
 		io.emit('iframe update', _url);
 	});
 
-	socket.on('setUserName', function(name) {
-		var _user = sessionStorage.getItem('user');
-		if(_user != null) {
-			_user.name = name;
-		} else {
+	socket.on('setUser', function(name) {
+		var _userCount = localStorage.getItem('userCount'),
 			_user = {
-				id: null,
-				name: name,
-				online: false,
+				name: name || 'User ' + _userCount
 			};
+
+		if(_userCount == null) {
+			_userCount = 1;
+			localStorage.setItem('userCount', _userCount);
+		} else {
+			_userCount += 1;
+			localStorage.setItem('userCount', _userCount);
 		}
 
-		sessionStorage.setItem('user', _user);
+		localStorage.setItem(socket.id, _user);
+		io.emit('person connected', _userCount);
 	});
 
-	io.emit('person connected', _peopleLoggedIn);
-})
+	socket.on('checkUser', function(id) {
+		var _user = localStorage.getItem(id);
+		if(_user != null) {
+			return true
+		}
+		return false;
+	});
+});
 
-http.listen(8080, function() {
+server.listen(8080, function() {
 	console.log('listening om *:8080');
 });

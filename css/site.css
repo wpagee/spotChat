@@ -64,6 +64,7 @@ body {
     padding: 15px;
     overflow-x: hidden;
     overflow-y: auto;
+    border-right: 1px solid #f5f5f5;
 }
 
 .app-page {
