@@ -44,7 +44,16 @@
                 </div>
               </div>
             </div>
+
             <ul class="media-list"></ul>
+
+            <div class="chat-log-alert">
+              <div class="chat-log-alert-body alert-hidden" id="new-msg-alert">
+                <div>
+                  New Messages Available
+                </div>
+              </div>
+            </div>
           </div>
       </div>
     </div>
@@ -70,7 +79,8 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.min.js"></script>
     <script>
-      var socket = io();
+      var socket = io(),
+          isScrolling = false;
       
       //get the msg
       $('#chat-form').submit(function() {
@@ -86,12 +96,8 @@
 
       //display new msg
       socket.on('chat message', function(chatMsg) {
-        $('.media-list').prepend(createNewPost(chatMsg));
-        setTimeout(function() {
-          $('.media-list .newMsg').each(function() {
-            $(this).removeClass('newMsg');
-          });
-        }, 10);
+        $('.media-list').append(createNewPost(chatMsg));
+        updateMediaListView();
       });
 
       socket.on('iframe update', function(url) {
@@ -108,14 +114,26 @@
 
       $(document).on('ready', function() {
         var name = prompt('Welcome, please enter the user name you would like to display.');
-        socket.emit('setUser', name);        
+        socket.emit('setUser', name); 
+
+        $(window).on('scroll', function() {
+          isScrolling = true;
+        }); 
+
+        $('#new-msg-alert').on('click', function() {
+          isScrolling = false;
+          $(this).addClass('alert-hidden');
+          updateMediaListView();
+        });      
       });
 
       function createNewPost(chatMsg) {
         return [
-                '<li class="media newMsg">',
+                '<li class="media">',
                 '<div class="media-body">',
-                '<h3 class="media-heading">',
+                '<h3 class="media-heading" style="color: ',
+                chatMsg.color,
+                ';">',
                 chatMsg.name,
                 '<small>Posted: ',
                 chatMsg.dateTime,
@@ -127,6 +145,31 @@
                 '</div>',
                 '</li>'
               ].join(' ');
+      };
+
+      function updateMediaListView() {
+        var $alert = $('#new-msg-alert');
+
+        if(isScrolling === false) {
+          $('html, body').animate({
+            scrollTop: $('.media-list').height()
+          }, 100, function() {
+            isScrolling = false;
+          });
+        } else {
+          if($alert.hasClass('alert-hidden')) {
+            $alert.removeClass('alert-hidden');
+          } else {
+            $alert.addClass('attention');
+            setTimeout(function() {
+              $alert.removeClass('attention');
+            }, 250);
+          }
+        }
+      };
+
+      function toggleMsgAlert() {
+        $('#new-msg-alert').addClass('alert-hidden');
       };
     </script>
 

@@ -34,7 +34,8 @@ io.on('connection', function(socket){
 		var chatMsg = {
 			dateTime: moment().format("MMM D, YYYY h:mm:ss a"),
 			message: msg,
-			name: _user != null ? _user.name : 'unknown'
+			name: _user != null ? _user.name : 'unknown',
+			color: _user.color
 		};
 
 		io.emit('chat message', chatMsg);
@@ -62,7 +63,8 @@ io.on('connection', function(socket){
 	socket.on('setUser', function(name) {
 		var _userCount = localStorage.getItem('userCount'),
 			_user = {
-				name: name || 'User ' + _userCount
+				name: name || 'User ' + _userCount,
+				color: '#' + Math.floor(Math.random()*16777215).toString(16)
 			};
 
 		if(_userCount == null) {

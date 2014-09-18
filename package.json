@@ -2,6 +2,7 @@
   "name": "spotChat",
   "version": "0.0.1-5",
   "description": "Spotify Chat Web App",
+  "author": "William Agee",
   "dependencies": {
     "express": "4.9.0",
     "socket.io": "1.1.0",
