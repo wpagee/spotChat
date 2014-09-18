@@ -49,6 +49,8 @@ io.on('connection', function(socket){
 			_url = ['https://embed.spotify.com/?uri=', url].join('');
 		} else if(url.match('http://open.spotify.com/track/')) {
 			_url = url.replace('http://open.spotify.com/track/', 'https://embed.spotify.com/?uri=spotify:track:');
+		} else if(url.match('spotify:user:') && url.match(':playlist:')) {
+			_url = ['https://embed.spotify.com/?uri=', url].join('');
 		}
 		if(_url == null) {
 			_url = url;
