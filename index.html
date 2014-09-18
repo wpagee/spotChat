@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Local Node/Socket.IO chat</title>
+    <title>Spot-Chat</title>
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
@@ -27,12 +27,18 @@
 
 
               <div class="embed-responsive embed-responsive-16by9">
-                  <iframe id="app-iframe" src="https://embed.spotify.com/?uri=spotify:track:3xbVLFFcodMTNlLb8wuPsC" class="embed-responsive-item"></iframe>
+                  <iframe id="app-iframe" 
+                          src="https://embed.spotify.com/?uri=spotify:track:3xbVLFFcodMTNlLb8wuPsC" 
+                          class="embed-responsive-item"
+                          allowtransparency="true"
+                          frameborder="0">
+                  </iframe>
               </div>
           </div>
-          <div class="col-xs-6 col-xs-offset-6 col-sm-offset-8 col-sm-4" style="padding-top: 50px;">
-            <div style="padding-bottom: 10px; position: absolute; top: 0; left: 0; margin-top: -15px;">
-              <div style="position: fixed; background: #ffffff; width: 100%; padding: 15px; box-shadow: 4px 2px 4px #555">
+
+          <div class="col-xs-6 col-xs-offset-6 col-sm-offset-8 col-sm-4 chat-log">
+            <div class="chat-log-header">
+              <div class="chat-log-body">
                 <div>
                   People Connected&nbsp;&nbsp;&nbsp;&nbsp;<span class="badge" id="peopleConected"></span>
                 </div>
@@ -68,7 +74,7 @@
       
       //get the msg
       $('#chat-form').submit(function() {
-        socket.emit('chat message', $('#m').val(), window.sessionStorage.getItem('spotChat-id'));
+        socket.emit('chat message', $('#m').val());
         $('#m').val('');
         return false;
       });
@@ -80,7 +86,12 @@
 
       //display new msg
       socket.on('chat message', function(chatMsg) {
-        $('.media-list').append(createNewPost(chatMsg));
+        $('.media-list').prepend(createNewPost(chatMsg));
+        setTimeout(function() {
+          $('.media-list .newMsg').each(function() {
+            $(this).removeClass('newMsg');
+          });
+        }, 10);
       });
 
       socket.on('iframe update', function(url) {
@@ -91,7 +102,7 @@
         $('#peopleConected').text(count);      
       });
 
-      socket.on('person disconnect', function(count) {
+      socket.on('person disconnected', function(count) {
         $('#peopleConected').text(count);
       });
 
@@ -102,10 +113,7 @@
 
       function createNewPost(chatMsg) {
         return [
-                '<li class="media">',
-                //'<a class="pull-left" href="#">',
-                //'<img class="media-object" src="http://placecage.com/c/64/64" alt="">',
-                //'</a>',
+                '<li class="media newMsg">',
                 '<div class="media-body">',
                 '<h3 class="media-heading">',
                 chatMsg.name,
