@@ -1,6 +1,6 @@
 {
   "name": "spotChat",
-  "version": "0.0.1-4",
+  "version": "0.0.1-5",
   "description": "Spotify Chat Web App",
   "dependencies": {
     "express": "4.9.0",
