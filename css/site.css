@@ -149,7 +149,7 @@ transition: margin-bottom 2s, margin-top 2s;*/
 }
 
 .chat-log-alert-body.alert-hidden {
-  margin-top: -500px;
+  margin-top: -100vh;
   transition: margin-top 1s;
 }
 
@@ -160,11 +160,15 @@ transition: margin-bottom 2s, margin-top 2s;*/
           animation: wobble 1s linear 0s infinite alternate;
 }
 
-@-webkit-keyframes wobble { from { margin-left:-15px; } to { margin-left:30px; }  }
-   @-moz-keyframes wobble { from { margin-left:-15px; } to { margin-left:30px; }  }
-     @-o-keyframes wobble { from { margin-left:-15px; } to { margin-left:30px; }  }
-        @keyframes wobble { from { margin-left:-15px; } to { margin-left:30px; }  }
+@-webkit-keyframes wobble { from { margin-left:-15px; } to { margin-left:45px; }  }
+   @-moz-keyframes wobble { from { margin-left:-15px; } to { margin-left:45px; }  }
+     @-o-keyframes wobble { from { margin-left:-15px; } to { margin-left:45px; }  }
+        @keyframes wobble { from { margin-left:-15px; } to { margin-left:45px; }  }
 
 .app-page {
   padding: 60px 15px;
+}
+
+#personConnecting { 
+  opacity: 0;
 }
