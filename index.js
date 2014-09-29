@@ -76,7 +76,10 @@ io.on('connection', function(socket){
 		}
 
 		localStorage.setItem(socket.id, _user);
-		io.emit('person connected', _userCount);
+		io.emit('person connected', {
+				userTotal: _userCount,
+				userName: name 
+			});
 	});
 
 	socket.on('checkUser', function(id) {
